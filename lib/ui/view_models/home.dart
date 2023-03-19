@@ -5,7 +5,6 @@ import 'package:brilliant_voices/pages/join_game/join_game_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-
 class HomeViewModelState {
   final String username;
   HomeViewModelState({required this.username});
@@ -23,7 +22,9 @@ class HomeViewModel extends ChangeNotifier {
   HomeViewModelState _state;
   HomeViewModelState get state => _state;
 
-  HomeViewModel({required this.context}): _service = GetIt.instance<UserService>(), _state = HomeViewModelState(username: "") {
+  HomeViewModel({required this.context})
+      : _service = GetIt.instance<UserService>(),
+        _state = HomeViewModelState(username: "") {
     _service.userStream.listen((user) {
       _state = _state.copyWith(username: user.username);
       notifyListeners();
@@ -35,13 +36,13 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   void onCreateButtonGame() {
-    _service.saveUser(username: _state.username, ownerFlag: true);
+    _service.createUser(username: _state.username, ownerFlag: true);
     Navigator.of(context).push(MaterialPageRoute(
         builder: (BuildContext context) => CreateGamePage.create()));
   }
 
   void onJoinButtonGame() {
-    _service.saveUser(username: _state.username, ownerFlag: false);
+    _service.createUser(username: _state.username, ownerFlag: false);
     Navigator.of(context).push(MaterialPageRoute(
         builder: (BuildContext context) => JoinGamePage.create()));
   }

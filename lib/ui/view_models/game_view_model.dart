@@ -15,18 +15,36 @@ class RoundState {
   Widget placeholderFirst;
   Widget placeHolderSecond;
 
-  RoundState({required this.playerCards, required this.question, required this.time, required this.placeholderFirst, required this.placeHolderSecond}): endGame = false;
-  RoundState.createRoundFirst(): playerCards = [], question = "", time = "00:00", endGame = false, placeholderFirst = SizedBox.shrink(), placeHolderSecond = StartButton();
-  RoundState.createRoundDuringGame(): playerCards = [], question = "", time = "00:00", endGame = false, placeholderFirst = QuestionField(), placeHolderSecond = TimerField();
+  RoundState(
+      {required this.playerCards,
+      required this.question,
+      required this.time,
+      required this.placeholderFirst,
+      required this.placeHolderSecond})
+      : endGame = false;
+  RoundState.createRoundFirst()
+      : playerCards = [],
+        question = "",
+        time = "00:00",
+        endGame = false,
+        placeholderFirst = SizedBox.shrink(),
+        placeHolderSecond = StartButton();
+  RoundState.createRoundDuringGame()
+      : playerCards = [],
+        question = "",
+        time = "00:00",
+        endGame = false,
+        placeholderFirst = QuestionField(),
+        placeHolderSecond = TimerField();
 
-  RoundState copyWith(Round game) {
+  RoundState copyWith(Game game) {
     return RoundState(
-        playerCards: game.users.map((e) => PlayerCard(username: e.username)).toList(),
+        playerCards:
+            game.users.map((e) => PlayerCard(username: e.username)).toList(),
         question: game.question.questionText,
         time: time,
         placeholderFirst: placeholderFirst,
-        placeHolderSecond: placeHolderSecond
-    );
+        placeHolderSecond: placeHolderSecond);
   }
 
   RoundState copyWithPlaceholderFirst(placeholder) {
@@ -35,8 +53,7 @@ class RoundState {
         question: question,
         time: time,
         placeholderFirst: placeholder,
-        placeHolderSecond: placeHolderSecond
-    );
+        placeHolderSecond: placeHolderSecond);
   }
 
   RoundState copyWithPlaceholderSecond(placeholder) {
@@ -45,8 +62,7 @@ class RoundState {
         question: question,
         time: time,
         placeholderFirst: placeholderFirst,
-        placeHolderSecond: placeholder
-    );
+        placeHolderSecond: placeholder);
   }
 
   RoundState copyWithTime(int tick) {
@@ -55,16 +71,15 @@ class RoundState {
         question: question,
         time: _timeToString(tick),
         placeholderFirst: placeholderFirst,
-        placeHolderSecond: placeHolderSecond
-    );
+        placeHolderSecond: placeHolderSecond);
   }
 
   String _timeToString(int tick) {
     String twoDigits(int n) => n.toString().padLeft(2, "0");
     String twoDigitMinutes =
-    twoDigits(Duration(seconds: tick).inMinutes.remainder(60));
+        twoDigits(Duration(seconds: tick).inMinutes.remainder(60));
     String twoDigitSeconds =
-    twoDigits(Duration(seconds: tick).inSeconds.remainder(60));
+        twoDigits(Duration(seconds: tick).inSeconds.remainder(60));
     return "$twoDigitMinutes:$twoDigitSeconds";
   }
 }
@@ -74,13 +89,17 @@ class GameViewModel extends ChangeNotifier {
   RoundState _state;
   RoundState get state => _state;
 
-  List<StreamSubscription> subscriptions= [];
+  List<StreamSubscription> subscriptions = [];
 
   BuildContext context;
 
-  GameViewModel({required this.context}): _state = RoundState.createRoundFirst(), _service = RoundService();
+  GameViewModel({required this.context})
+      : _state = RoundState.createRoundFirst(),
+        _service = RoundService();
 
-  GameViewModel.duringGame({required this.context}): _state = RoundState.createRoundDuringGame(), _service = RoundService.duringGame() {
+  GameViewModel.duringGame({required this.context})
+      : _state = RoundState.createRoundDuringGame(),
+        _service = RoundService.duringGame() {
     _listenRoundStream();
     _listenTimeStream();
   }
@@ -113,13 +132,11 @@ class GameViewModel extends ChangeNotifier {
       sub.cancel();
     }
   }
-  
+
   void _goShowAnswerPage() {
     _stopListening();
-    Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder:
-            (BuildContext context) => ShowAnswersPage.create()
-        ));
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (BuildContext context) => ShowAnswersPage.create()));
     _service.readyForShowResults();
   }
 
@@ -132,4 +149,3 @@ class GameViewModel extends ChangeNotifier {
     notifyListeners();
   }
 }
-

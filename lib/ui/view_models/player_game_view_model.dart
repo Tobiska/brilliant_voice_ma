@@ -1,4 +1,3 @@
-
 import 'dart:async';
 
 import 'package:brilliant_voices/pages/player_game_page/player_game_page.dart';
@@ -8,7 +7,6 @@ import 'package:flutter/material.dart';
 import '../../domain/entity/game.dart';
 import '../../domain/services/round.dart';
 import '../../pages/show_answers_page/show_answers_page.dart';
-
 
 class State {
   List<PlayerCard> playerCards;
@@ -29,17 +27,16 @@ class State {
       required this.placeholderFirst,
       required this.placeHolderSecond});
 
-  State copyWith(Round game) {
+  State copyWith(Game game) {
     return State(
-        playerCards: game.users.map((e) => PlayerCard(username: e.username))
-            .toList(),
+        playerCards:
+            game.users.map((e) => PlayerCard(username: e.username)).toList(),
         answer: answer,
         time: time,
         placeholderFirst: placeholderFirst,
         placeHolderSecond: placeHolderSecond,
         isAnswerFieldLocked: isAnswerFieldLocked,
-        endGame: endGame
-    );
+        endGame: endGame);
   }
 
   State copyWithTime(int tick) {
@@ -48,16 +45,17 @@ class State {
         answer: answer,
         time: _timeToString(tick),
         placeholderFirst: placeholderFirst,
-        placeHolderSecond: placeHolderSecond, isAnswerFieldLocked: isAnswerFieldLocked, endGame: endGame
-    );
+        placeHolderSecond: placeHolderSecond,
+        isAnswerFieldLocked: isAnswerFieldLocked,
+        endGame: endGame);
   }
 
   String _timeToString(int tick) {
     String twoDigits(int n) => n.toString().padLeft(2, "0");
     String twoDigitMinutes =
-    twoDigits(Duration(seconds: tick).inMinutes.remainder(60));
+        twoDigits(Duration(seconds: tick).inMinutes.remainder(60));
     String twoDigitSeconds =
-    twoDigits(Duration(seconds: tick).inSeconds.remainder(60));
+        twoDigits(Duration(seconds: tick).inSeconds.remainder(60));
     return "$twoDigitMinutes:$twoDigitSeconds";
   }
 
@@ -69,8 +67,7 @@ class State {
         placeholderFirst: placeholderFirst,
         placeHolderSecond: placeholder,
         isAnswerFieldLocked: isAnswerFieldLocked,
-        endGame: endGame
-    );
+        endGame: endGame);
   }
 
   State copyWithLocked(bool isLocked) {
@@ -81,8 +78,7 @@ class State {
         placeholderFirst: placeholderFirst,
         placeHolderSecond: placeHolderSecond,
         isAnswerFieldLocked: isLocked,
-        endGame: endGame
-    );
+        endGame: endGame);
   }
 
   State copyWithAnswer(String answer) {
@@ -93,18 +89,17 @@ class State {
         placeholderFirst: placeholderFirst,
         placeHolderSecond: placeHolderSecond,
         isAnswerFieldLocked: isAnswerFieldLocked,
-        endGame: endGame
-    );
+        endGame: endGame);
   }
-  
-  State.shrink():
-      playerCards = [],
-      answer = "",
-      isAnswerFieldLocked = true,
-      time = "00:00",
-      endGame = false,
-      placeholderFirst = AnswerField(),
-      placeHolderSecond = ReadyButton();
+
+  State.shrink()
+      : playerCards = [],
+        answer = "",
+        isAnswerFieldLocked = true,
+        time = "00:00",
+        endGame = false,
+        placeholderFirst = AnswerField(),
+        placeHolderSecond = ReadyButton();
 }
 
 class PlayerGameViewModel extends ChangeNotifier {
@@ -112,11 +107,13 @@ class PlayerGameViewModel extends ChangeNotifier {
   State _state;
   State get state => _state;
 
-  List<StreamSubscription> subscriptions= [];
+  List<StreamSubscription> subscriptions = [];
 
   BuildContext context;
-  
-  PlayerGameViewModel({required this.context}): _service = RoundService.duringGame(), _state = State.shrink() {
+
+  PlayerGameViewModel({required this.context})
+      : _service = RoundService.duringGame(),
+        _state = State.shrink() {
     _service.roundStream.listen((game) {
       if (game.isRoundFinished) {
         _goShowAnswerPage();
@@ -138,10 +135,8 @@ class PlayerGameViewModel extends ChangeNotifier {
 
   void _goShowAnswerPage() {
     _stopListening();
-    Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder:
-            (BuildContext context) => ShowAnswersPage.create()
-        ));
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (BuildContext context) => ShowAnswersPage.create()));
     _service.readyForShowResults();
   }
 
@@ -154,8 +149,8 @@ class PlayerGameViewModel extends ChangeNotifier {
   void onChangedAnswerField(String text) {
     _state = _state.copyWithAnswer(text);
   }
-  
-  void onPressedReadyButton () {
+
+  void onPressedReadyButton() {
     _state = _state.copyWithPlaceholderSecond(WaitButton());
     _state = _state.copyWithLocked(false);
     _service.sendAnswer(_state.answer);

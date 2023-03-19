@@ -19,17 +19,20 @@ class GameProvider {
 
   Stream<Wait> get updateWaitStream => wait.updateWaitController.stream;
 
-  Stream get updateGameStream => game.currentRoundInf.updateRoundStreamController.stream;
+  Stream get updateGameStream =>
+      game.currentRoundInf.updateRoundStreamController.stream;
 
-  Stream get updateRoundResultStream => game.currentRoundInf.updateRoundResultStreamController.stream;
+  Stream get updateRoundResultStream =>
+      game.currentRoundInf.updateRoundResultStreamController.stream;
 
-  Stream get updateTimeStream => game.currentRoundInf.updateTickStreamController.stream;
-  
-  Round createGame(User user, GameProperties properties) {
+  Stream get updateTimeStream =>
+      game.currentRoundInf.updateTickStreamController.stream;
+
+  Game createGame(User user, GameProperties properties) {
     game = GameInf(
-        durationRoundSeconds: properties.roundTime.inSeconds,
-        countPlayers: properties.countPlayers,
-        owner: user,
+      durationRoundSeconds: properties.roundTime.inSeconds,
+      countPlayers: properties.countPlayers,
+      owner: user,
     );
     return game.currentRoundInf.currentRound;
   }
@@ -40,12 +43,14 @@ class GameProvider {
     wait.endWaitStream.listen((event) {
       startGameSession();
     });
-    return GameProperties.fromInts(countPlayers: game.countPlayers, roundTime: game.durationRoundSeconds);
+    return GameProperties.fromInts(
+        countPlayers: game.countPlayers, roundTime: game.durationRoundSeconds);
   }
-  
+
   GameProperties startGameSession() {
     game.generateRound();
-    return GameProperties.fromInts(countPlayers: game.countPlayers, roundTime: game.durationRoundSeconds);
+    return GameProperties.fromInts(
+        countPlayers: game.countPlayers, roundTime: game.durationRoundSeconds);
   }
 
   void leavePlayer(String username) {}

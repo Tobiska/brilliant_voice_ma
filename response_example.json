@@ -1,0 +1,24 @@
+{
+  "code": "BHHT",
+  "users": [
+    {
+      "name": "admin"
+    },
+    {
+      "name": "admin"
+    }
+  ],
+  "owner_name": "admin",
+  "status": "round_running",
+  "rest_time": "27s",
+  "round": {
+    "question": "Домодедово это дом дедов?",
+    "answers": {
+      "admin": {
+        "text_answer": "Mama",
+        "is_correct": false
+      }
+    }
+  },
+  "number_of_round": 0
+}

@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:brilliant_voices/domain/entity/game.dart';
+import 'package:brilliant_voices/domain/entity/game_properties.dart';
+import 'package:brilliant_voices/domain/services/contracts.dart';
 import 'package:brilliant_voices/domain/services/user.dart';
 import 'package:brilliant_voices/infrustructure/game_user_provider.dart';
 import 'package:get_it/get_it.dart';
@@ -17,31 +19,33 @@ class RoundTimeInvalidError implements Exception {}
 
 class RoundService {
   final GameProvider _roundProvider;
-  final GameService _gameService;
+  final PropertiesRepository _propertiesRepository;
+  final UserRepository _userRepository;
 
   late Ticker _ticker;
   Stream<int> get tickStream => _ticker.ticks();
 
   List<StreamSubscription> subscriptions = [];
 
-  final StreamController<Round> _roundStreamController;
+  final StreamController<Game> _roundStreamController;
   Stream get roundStream => _roundStreamController.stream;
 
   RoundService()
-      : _roundStreamController = StreamController<Round>(),
+      : _roundStreamController = StreamController<Game>(),
         _roundProvider = GetIt.instance<GameProvider>(),
-        _gameService = GetIt.instance<GameService>();
+        _userRepository = GetIt.instance<UserRepository>(),
+        _propertiesRepository = GetIt.instance<PropertiesRepository>();
 
   RoundService.duringGame()
-      : _roundStreamController = StreamController<Round>(),
-        _roundProvider = GetIt.instance<GameProvider>(),
-        _gameService = GetIt.instance<GameService>()
-    {
-      startGameSession();
+      : _roundStreamController = StreamController<Game>(),
+        _propertiesRepository = GetIt.instance<PropertiesRepository>(),
+        _userRepository = GetIt.instance<UserRepository>(),
+        _roundProvider = GetIt.instance<GameProvider>() {
+    startGameSession();
   }
 
   void leaveTheGame() async {
-    User user =  await _gameService.getUser();
+    User user = await _userRepository.loadUser();
     _roundProvider.leavePlayer(user.username);
   }
 
@@ -50,8 +54,9 @@ class RoundService {
     _roundProvider.game.currentRoundInf.pushRoundResult();
   }
 
-  void startGameSession() {
-    _ticker = Ticker(currentTick: _gameService.properties.roundTime.inSeconds);
+  void startGameSession() async {
+    GameProperties properties = await _propertiesRepository.loadProperties();
+    _ticker = Ticker(currentTick: properties.roundTime.inSeconds);
     _roundProvider.startGameSession();
     subscriptions.add(_roundProvider.updateGameStream.listen((event) {
       _roundStreamController.add(event);
@@ -65,7 +70,7 @@ class RoundService {
   }
 
   void sendAnswer(String answer) async {
-    _roundProvider.sendAnswer(answer, await _gameService.getUser());
+    _roundProvider.sendAnswer(answer, await _userRepository.loadUser());
   }
 }
 

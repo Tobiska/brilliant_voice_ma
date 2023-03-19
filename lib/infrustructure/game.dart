@@ -19,12 +19,11 @@ List<Question> gameQuestions = [
 
 const roundCount = 4;
 
-
 class GameInf {
   final int countPlayers;
   final int durationRoundSeconds;
 
-  User owner = User(username: "", isOwner: false);
+  User owner = User(username: "", isOwner: false, code: "");
 
   int countRound = 0;
 
@@ -41,8 +40,7 @@ class GameInf {
   GameInf.shrink()
       : currentRoundInf = RoundInf.shrink(),
         countPlayers = 5,
-        durationRoundSeconds = 5
-  ;
+        durationRoundSeconds = 5;
 
   void finishGame() {
     isGameFinished = true;
@@ -66,7 +64,7 @@ class GameInf {
   List<User> _createUsers(int countUsers, User owner) {
     List<User> users = [owner];
     for (int i = 1; i <= countUsers - 2; i++) {
-      users.add(User(username: 'user$i', isOwner: false));
+      users.add(User(username: 'user$i', isOwner: false, code: ""));
     }
     return users;
   }
@@ -79,7 +77,7 @@ class RoundInf {
 
   List<User> users = [];
 
-  late StreamController<Round> updateRoundStreamController;
+  late StreamController<Game> updateRoundStreamController;
   late StreamController<int> updateTickStreamController;
   late StreamController<RoundResult> updateRoundResultStreamController;
 
@@ -88,7 +86,7 @@ class RoundInf {
   late Timer _roundFinishTimer;
 
   List<RoundResult> roundResults = [];
-  Round currentRound = Round.shrink();
+  Game currentRound = Game.shrink();
 
   final User owner;
 
@@ -97,7 +95,7 @@ class RoundInf {
         countPlayers = 0,
         durationRoundSeconds = 0,
         users = [],
-        owner = User(username: "", isOwner: true);
+        owner = User(username: "", isOwner: true, code: "");
 
   RoundInf(
       {required this.question,
@@ -105,7 +103,7 @@ class RoundInf {
       required this.durationRoundSeconds,
       required this.users,
       required this.owner}) {
-    currentRound = Round(
+    currentRound = Game(
         users: users,
         owner: owner,
         question: question,
@@ -118,7 +116,7 @@ class RoundInf {
   }
 
   void _initStreams() {
-    updateRoundStreamController = StreamController<Round>();
+    updateRoundStreamController = StreamController<Game>();
     updateTickStreamController = StreamController<int>();
     updateRoundResultStreamController = StreamController<RoundResult>();
   }
@@ -132,7 +130,7 @@ class RoundInf {
   Timer _startUpdateTimer(int duration) {
     return Timer.periodic(Duration(seconds: duration), (timer) {
       if (users.length != countPlayers) {
-        users.add(User(username: "BOT", isOwner: false));
+        users.add(User(username: "BOT", isOwner: false, code: ""));
       } else {
         users.removeLast();
       }
@@ -162,9 +160,7 @@ class RoundInf {
     currentRound = currentRound.copyWithRoundResult(
         roundResult: RoundResult(
             isWin: answer == currentRound.question.answerText,
-            userAnswers: [
-              UserAnswer(answer: answer, user: user)
-            ]));
+            userAnswers: [UserAnswer(answer: answer, user: user)]));
   }
 
   void roundFinish() {

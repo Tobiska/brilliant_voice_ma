@@ -24,16 +24,16 @@ void main() async {
 }
 
 void setUpDependencies() {
-  GetIt.instance.registerSingletonAsync<SharedPreferences>(SharedPreferences.getInstance);
+  GetIt.instance
+      .registerSingletonAsync<SharedPreferences>(SharedPreferences.getInstance);
   GetIt.instance.registerSingleton<GameProvider>(GameProvider());
   GetIt.instance.registerSingletonWithDependencies<UserProvider>(
-      () => UserProvider(), dependsOn: [
-      SharedPreferences
-  ]);
+      () => UserProvider(),
+      dependsOn: [SharedPreferences]);
   GetIt.instance.registerFactory<UserService>(UserService.new);
-  GetIt.instance.registerSingletonWithDependencies<GameService>(() => GameService(), dependsOn: [
-    UserProvider
-  ]);
+  GetIt.instance.registerSingletonWithDependencies<GameService>(
+      () => GameService(),
+      dependsOn: [UserProvider]);
   GetIt.instance.registerFactory<RoundService>(RoundService.new);
   GetIt.instance.registerFactory<AnswersService>(AnswersService.new);
 }
@@ -57,4 +57,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

@@ -4,7 +4,7 @@ import 'package:brilliant_voices/domain/entity/question.dart';
 import 'package:brilliant_voices/domain/entity/round_result.dart';
 import 'package:brilliant_voices/domain/entity/user.dart';
 
-class Round {
+class Game {
   final List<User> users;
   final User owner;
   final Question question;
@@ -13,7 +13,7 @@ class Round {
   final bool readyNextRound;
   final RoundResult roundResult;
 
-  Round(
+  Game(
       {required this.users,
       required this.owner,
       required this.question,
@@ -22,17 +22,17 @@ class Round {
       required this.readyNextRound,
       required this.roundResult});
 
-  Round.shrink()
+  Game.shrink()
       : users = [],
-        owner = User(username: "", isOwner: false),
+        owner = User(username: "", isOwner: false, code: ""),
         question = Question.shrink(),
         isRoundFinished = false,
         roundResult = RoundResult.shrink(),
         readyNextRound = false,
         timer = Timer(Duration.zero, () {});
 
-  Round copyWithFlags({bool isFinished = false, bool readyNext = false}) {
-    return Round(
+  Game copyWithFlags({bool isFinished = false, bool readyNext = false}) {
+    return Game(
         users: users,
         owner: owner,
         question: question,
@@ -42,8 +42,8 @@ class Round {
         isRoundFinished: isFinished);
   }
 
-  Round copyWithUsers({required List<User> users}) {
-    return Round(
+  Game copyWithUsers({required List<User> users}) {
+    return Game(
         users: users,
         owner: owner,
         question: question,
@@ -53,8 +53,8 @@ class Round {
         isRoundFinished: isRoundFinished);
   }
 
-  Round copyWithRoundResult({required roundResult}) {
-    return Round(
+  Game copyWithRoundResult({required roundResult}) {
+    return Game(
         users: users,
         owner: owner,
         question: question,
